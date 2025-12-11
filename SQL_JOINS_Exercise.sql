@@ -9,30 +9,54 @@ ON C.CategoryID = p.CategoryID
 WHERE C.Name = 'Computers';
  
 /* joins: find all product names, product prices, and products ratings that have a rating of 5 */
-SELECT p.Name as Product, p.Price as Price, r.Rating as Rating
-FROM products as P
-INNER JOIN reviews as R
-ON R.ProductID = p.ProductID
-Where R.Rating = 5;
+SELECT p.Name, p.Price, r.Rating
+FROM products as p
+INNER JOIN reviews as r
+ON r.ProductID = p.ProductID
+Where r.Rating = 5;
  
 /* joins: find the employee with the most total quantity sold.  use the sum() function and group by */
 
-SELECT e.EmployeeID as Employee, e.LastName as Name, SUM(s.quantity) as Total
-FROM employees as e
-INNER JOIN sales as s
-ON s.EmployeeID = e.EmployeeID
-GROUP BY e.EmployeeID, e.LastName
+SELECT e.FirstName, e.LastName, SUM(s.quantity) as Total
+FROM sales as s
+INNER JOIN employees as e
+ON e.EmployeeID = s.EmployeeID
+GROUP BY e.EmployeeID
 ORDER BY Total DESC
-LIMIT 100;
+LIMIT 2;
 
--- EmployeeID, lastname, firstname, middle,SalesID,Quantity
 
 /* joins: find the name of the department, and the name of the category for Appliances and Games */
 
+SELECT d.Name as 'Department Name', c.Name as 'Category Name'
+FROM departments as d
+INNER JOIN categories as c
+ON c.DepartmentID = d.DepartmentID
+WHERE c.Name = 'Appliances' OR c.Name = 'Games';
+
+
+
 /* joins: find the product name, total # sold, and total price sold,
  for Eagles: Hotel California --You may need to use SUM() */
+ 
+ SELECT p.Name, Sum(s.Quantity) as 'Total Sold', Sum(s.Quantity * s.PricePerUnit) as 'Total Price'
+ FROM products as p
+ INNER JOIN sales as s
+ ON s.ProductID = p.ProductID
+ WHERE p.ProductID = 97;
+ 
+ /*Verify Product ID*/
+ 
+ SELECT * FROM sales
+ WHERE productID = 97;
+ 
 
 /* joins: find Product name, reviewer name, rating, and comment on the Visio TV. (only return for the lowest rating!) */
+
+SELECT p.Name, r.Reviewer, r.Rating, r.Comment
+FROM products as p
+INNER JOIN reviews as r ON r.ProductID = p.ProductID
+WHERE p.ProductID = 857 AND r.Rating = 1;
 
 
 -- ------------------------------------------ Extra - May be difficult
@@ -42,3 +66,12 @@ This query should return:
 -  the employee's first and last name
 -  the name of each product
 -  and how many of that product they sold */
+
+SELECT e.EmployeeID, e.FirstName, e.LastName, P.Name, SUM(s.Quantity) as TotalSold
+FROM sales as s
+INNER JOIN employees as e 
+ON e.EmployeeID = s.EmployeeID
+INNER JOIN products as p
+ON p.ProductID = s.ProductID
+Group BY e.EmployeeID, p.ProductID
+ORDER BY e.FirstName;
